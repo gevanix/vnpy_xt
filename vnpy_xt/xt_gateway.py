@@ -135,6 +135,8 @@ class XtGateway(BaseGateway):
         "期权市场": ["是", "否"],
         "仿真交易": ["是", "否"],
         "账号类型": ["股票", "股票期权"],
+        # 新增QMT版本的选择, 分别对应标准版和简易版
+        "QMT版本":  ["标准", "简易"],
         "QMT路径": "",
         "资金账号": ""
     }
@@ -173,8 +175,17 @@ class XtGateway(BaseGateway):
         self.md_api.connect(token, stock_active, futures_active, option_active)
 
         self.trading = setting["仿真交易"] == "是"
+
         if self.trading:
-            path: str = setting["QMT路径"] + "\\userdata"
+            # 根据QMT类型选择不同的连接路径
+            if setting.get("QMT版本") == "简易":
+                path_suffix = "userdata_mini"
+            else:
+                path_suffix = "userdata"
+
+            path: str = setting["QMT路径"] + "\\" + path_suffix
+
+            self.write_log(f"QMT客户端库路径: {path}")
 
             accountid: str = setting["资金账号"]
 
@@ -359,7 +370,9 @@ class XtMdApi:
             return
 
         try:
-            self.init_xtdc()
+            # token不为空时, 初始化xtdc服务进程
+            if self.token:
+                self.init_xtdc()
 
             # 尝试查询合约信息，确认连接成功
             xtdata.get_instrument_detail("000001.SZ")
