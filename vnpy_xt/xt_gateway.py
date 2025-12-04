@@ -133,7 +133,7 @@ class XtGateway(BaseGateway):
         "股票市场": ["是", "否"],
         "期货市场": ["是", "否"],
         "期权市场": ["是", "否"],
-        "仿真交易": ["是", "否"],
+        "使能交易": ["是", "否"],
         "账号类型": ["股票", "股票期权"],
         # 新增QMT版本的选择, 分别对应标准版和简易版
         "QMT版本":  ["标准", "简易"],
@@ -174,7 +174,7 @@ class XtGateway(BaseGateway):
 
         self.md_api.connect(token, stock_active, futures_active, option_active)
 
-        self.trading = setting["仿真交易"] == "是"
+        self.trading = setting["使能交易"] == "是"
 
         if self.trading:
             # 根据QMT类型选择不同的连接路径
